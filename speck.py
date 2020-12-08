@@ -4,10 +4,7 @@ from os import urandom
 
 WORD_SIZE: int = 16
 ALPHA: int = 7
-
-
-def BETA():
-    return 2
+BETA: int = 2
 
 
 MASK_VAL = 2 ** WORD_SIZE - 1
@@ -33,7 +30,7 @@ def encrypt_one_round(p, k):
     c0 = ror(c0, ALPHA)
     c0 = (c0 + c1) & MASK_VAL
     c0 = c0 ^ k
-    c1 = rol(c1, BETA())
+    c1 = rol(c1, BETA)
     c1 = c1 ^ c0
     return (c0, c1)
 
@@ -41,7 +38,7 @@ def encrypt_one_round(p, k):
 def decrypt_one_round(c, k):
     c0, c1 = c[0], c[1]
     c1 = c1 ^ c0
-    c1 = ror(c1, BETA())
+    c1 = ror(c1, BETA)
     c0 = c0 ^ k
     c0 = (c0 - c1) & MASK_VAL
     c0 = rol(c0, ALPHA)
