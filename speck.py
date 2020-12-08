@@ -8,13 +8,6 @@ BETA: int = 2
 MASK_VAL: int = 2 ** WORD_SIZE - 1
 
 
-def shuffle_together(l):
-    state = np.random.get_state()
-    for x in l:
-        np.random.set_state(state)
-        np.random.shuffle(x)
-
-
 def rol(x, k):
     return ((x << k) & MASK_VAL) | (x >> (WORD_SIZE - k))
 
