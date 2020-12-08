@@ -1,13 +1,11 @@
 import numpy as np
 from os import urandom
 
-
+# Constants
 WORD_SIZE: int = 16
 ALPHA: int = 7
 BETA: int = 2
-
-
-MASK_VAL = 2 ** WORD_SIZE - 1
+MASK_VAL: int = 2 ** WORD_SIZE - 1
 
 
 def shuffle_together(l):
