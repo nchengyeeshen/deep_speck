@@ -1,5 +1,6 @@
-import numpy as np
 from os import urandom
+
+import numpy as np
 
 # Constants
 WORD_SIZE: int = 16
