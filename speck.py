@@ -32,7 +32,7 @@ def ror(x, k):
     return (x >> k) | ((x << (WORD_SIZE() - k)) & MASK_VAL)
 
 
-def enc_one_round(p, k):
+def encrypt_one_round(p, k):
     c0, c1 = p[0], p[1]
     c0 = ror(c0, ALPHA())
     c0 = (c0 + c1) & MASK_VAL
@@ -57,14 +57,14 @@ def expand_key(k, t):
     ks[0] = k[len(k) - 1]
     l = list(reversed(k[: len(k) - 1]))
     for i in range(t - 1):
-        l[i % 3], ks[i + 1] = enc_one_round((l[i % 3], ks[i]), i)
+        l[i % 3], ks[i + 1] = encrypt_one_round((l[i % 3], ks[i]), i)
     return ks
 
 
 def encrypt(p, ks):
     x, y = p[0], p[1]
     for k in ks:
-        x, y = enc_one_round((x, y), k)
+        x, y = encrypt_one_round((x, y), k)
     return (x, y)
 
 
