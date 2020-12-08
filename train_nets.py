@@ -12,7 +12,7 @@ from keras.regularizers import l2
 import speck as sp
 
 bs = 5000
-wdir = "./freshly_trained_nets/"
+working_dir = "./freshly_trained_nets/"
 
 
 def cyclic_lr(num_epochs, high_lr, low_lr):
@@ -95,7 +95,7 @@ def train_speck_distinguisher(num_epochs, num_rounds=7, depth=1):
     X_eval, Y_eval = sp.make_train_data(10 ** 6, num_rounds)
     # set up model checkpoint
     check = make_checkpoint(
-        wdir + "best" + str(num_rounds) + "depth" + str(depth) + ".h5"
+        working_dir + "best" + str(num_rounds) + "depth" + str(depth) + ".h5"
     )
     # create learnrate schedule
     lr = LearningRateScheduler(cyclic_lr(10, 0.002, 0.0001))
@@ -109,16 +109,16 @@ def train_speck_distinguisher(num_epochs, num_rounds=7, depth=1):
         callbacks=[lr, check],
     )
     np.save(
-        wdir + "h" + str(num_rounds) + "r_depth" + str(depth) + ".npy",
+        working_dir + "h" + str(num_rounds) + "r_depth" + str(depth) + ".npy",
         h.history["val_acc"],
     )
     np.save(
-        wdir + "h" + str(num_rounds) + "r_depth" + str(depth) + ".npy",
+        working_dir + "h" + str(num_rounds) + "r_depth" + str(depth) + ".npy",
         h.history["val_loss"],
     )
     dump(
         h.history,
-        open(wdir + "hist" + str(num_rounds) + "r_depth" + str(depth) + ".p", "wb"),
+        open(working_dir + "hist" + str(num_rounds) + "r_depth" + str(depth) + ".p", "wb"),
     )
     print("Best validation accuracy: ", np.max(h.history["val_acc"]))
     return (net, h)
