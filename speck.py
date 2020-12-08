@@ -2,8 +2,7 @@ import numpy as np
 from os import urandom
 
 
-def WORD_SIZE():
-    return 16
+WORD_SIZE: int = 16
 
 
 def ALPHA():
@@ -14,7 +13,7 @@ def BETA():
     return 2
 
 
-MASK_VAL = 2 ** WORD_SIZE() - 1
+MASK_VAL = 2 ** WORD_SIZE - 1
 
 
 def shuffle_together(l):
@@ -25,11 +24,11 @@ def shuffle_together(l):
 
 
 def rol(x, k):
-    return ((x << k) & MASK_VAL) | (x >> (WORD_SIZE() - k))
+    return ((x << k) & MASK_VAL) | (x >> (WORD_SIZE - k))
 
 
 def ror(x, k):
-    return (x >> k) | ((x << (WORD_SIZE() - k)) & MASK_VAL)
+    return (x >> k) | ((x << (WORD_SIZE - k)) & MASK_VAL)
 
 
 def encrypt_one_round(p, k):
@@ -95,10 +94,10 @@ def check_testvector():
 # and so on
 # it returns an array of bit vectors containing the same data
 def convert_to_binary(arr):
-    X = np.zeros((4 * WORD_SIZE(), len(arr[0])), dtype=np.uint8)
-    for i in range(4 * WORD_SIZE()):
-        index = i // WORD_SIZE()
-        offset = WORD_SIZE() - (i % WORD_SIZE()) - 1
+    X = np.zeros((4 * WORD_SIZE, len(arr[0])), dtype=np.uint8)
+    for i in range(4 * WORD_SIZE):
+        index = i // WORD_SIZE
+        offset = WORD_SIZE - (i % WORD_SIZE) - 1
         X[i] = (arr[index] >> offset) & 1
     X = X.transpose()
     return X

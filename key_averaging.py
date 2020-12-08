@@ -8,7 +8,7 @@ from os import urandom
 
 from keras import backend as K
 
-WORD_SIZE = sp.WORD_SIZE();
+WORD_SIZE = sp.WORD_SIZE;
 
 def key_average(ct0a, ct1a, ct0b, ct1b, keys, net):
     n = len(keys);
