@@ -19,15 +19,15 @@ def key_rank_one_round(nr, net, n_blocks=1, diff=(0x0040,0x0)):
   pt0a = np.frombuffer(urandom(2*n_blocks),dtype=np.uint16).reshape(n_blocks,-1);
   pt1a = np.frombuffer(urandom(2*n_blocks),dtype=np.uint16).reshape(n_blocks,-1);
   pt0b, pt1b = pt0a ^ diff[0], pt1a ^ diff[1];
-  pt0a, pt1a = sp.dec_one_round((pt0a, pt1a),0);
-  pt0b, pt1b = sp.dec_one_round((pt0b, pt1b),0);
+  pt0a, pt1a = sp.decrypt_one_round((pt0a, pt1a),0);
+  pt0b, pt1b = sp.decrypt_one_round((pt0b, pt1b),0);
   key = np.frombuffer(urandom(8),dtype=np.uint16);
   ks = sp.expand_key(key, nr); k1 = ks[nr-1];
   ct0a, ct1a = sp.encrypt((pt0a, pt1a),ks);
   ct0b, ct1b = sp.encrypt((pt0b, pt1b),ks);
   trial_keys = np.arange(2**16);
-  c0a, c1a = sp.dec_one_round((ct0a, ct1a),trial_keys);
-  c0b, c1b = sp.dec_one_round((ct0b, ct1b),trial_keys);
+  c0a, c1a = sp.decrypt_one_round((ct0a, ct1a),trial_keys);
+  c0b, c1b = sp.decrypt_one_round((ct0b, ct1b),trial_keys);
   c1a = np.tile(c1a,2**16); c1b = np.tile(c1b, 2**16);
   #the next two lines are the only bits of this function that change
   #if instead of a neural network the difference distribution table is used for inference
@@ -35,7 +35,7 @@ def key_rank_one_round(nr, net, n_blocks=1, diff=(0x0040,0x0)):
   #Z is then calculated simply by looking up the relevant transition probabilities in the ddt
   #instead of a neural net, the function then expects as second input a table of size 2**32
   X = sp.convert_to_binary([c0a.flatten(), c1a.flatten(), c0b.flatten(), c1b.flatten()]);
-  Z = net.predict(X,batch_size=10000); Z = Z/(1-Z); 
+  Z = net.predict(X,batch_size=10000); Z = Z/(1-Z);
   Z = np.log2(Z); Z = Z.reshape(n_blocks,-1); Z = np.sum(Z,axis=0);
   rank0 = np.sum(Z > Z[k1]); rank1 = np.sum(Z >= Z[k1]);
   return(rank0, rank1);

@@ -82,8 +82,8 @@ def gen_plain(n):
 def gen_challenge(n, nr, diff=(0x211, 0xa04), neutral_bits = [20,21,22,14,15,23], keyschedule='real'):
   pt0, pt1 = gen_plain(n);
   pt0a, pt1a, pt0b, pt1b = make_structure(pt0, pt1, diff=diff, neutral_bits=neutral_bits);
-  pt0a, pt1a = sp.dec_one_round((pt0a, pt1a),0);
-  pt0b, pt1b = sp.dec_one_round((pt0b, pt1b),0);
+  pt0a, pt1a = sp.decrypt_one_round((pt0a, pt1a),0);
+  pt0b, pt1b = sp.decrypt_one_round((pt0b, pt1b),0);
   key = gen_key(nr);
   if (keyschedule is 'free'): key = np.frombuffer(urandom(2*nr),dtype=np.uint16);
   ct0a, ct1a = sp.encrypt((pt0a, pt1a), key);
@@ -113,10 +113,10 @@ def verifier_search(cts, best_guess, use_n = 64, net = net6):
   ct1a = np.tile(cts[1][0:use_n], n*n);
   ct0b = np.tile(cts[2][0:use_n], n*n);
   ct1b = np.tile(cts[3][0:use_n], n*n);
-  pt0a, pt1a = sp.dec_one_round((ct0a, ct1a), ck1);
-  pt0b, pt1b = sp.dec_one_round((ct0b, ct1b), ck1);
-  pt0a, pt1a = sp.dec_one_round((pt0a, pt1a), ck2);
-  pt0b, pt1b = sp.dec_one_round((pt0b, pt1b), ck2);
+  pt0a, pt1a = sp.decrypt_one_round((ct0a, ct1a), ck1);
+  pt0b, pt1b = sp.decrypt_one_round((ct0b, ct1b), ck1);
+  pt0a, pt1a = sp.decrypt_one_round((pt0a, pt1a), ck2);
+  pt0b, pt1b = sp.decrypt_one_round((pt0b, pt1b), ck2);
   X = sp.convert_to_binary([pt0a, pt1a, pt0b, pt1b]);
   Z = net.predict(X, batch_size=10000);
   Z = Z / (1 - Z);
@@ -141,8 +141,8 @@ def wrong_key_decryption(n, diff=(0x0040,0x0), nr=7, net = net7):
     ct0b, ct1b = sp.encrypt((pt0b, pt1b), ks);
     rsubkeys = i ^ ks[nr];
   #rsubkeys = rdiff ^ 0;
-    c0a, c1a = sp.dec_one_round((ct0a, ct1a),rsubkeys);
-    c0b, c1b = sp.dec_one_round((ct0b, ct1b),rsubkeys);
+    c0a, c1a = sp.decrypt_one_round((ct0a, ct1a),rsubkeys);
+    c0b, c1b = sp.decrypt_one_round((ct0b, ct1b),rsubkeys);
     X = sp.convert_to_binary([c0a, c1a, c0b, c1b]);
     Z = net.predict(X,batch_size=10000);
     Z = Z.flatten();
@@ -181,7 +181,7 @@ def bayesian_key_recovery(cts, net=net7, m = m7, s = s7, num_cand = 32, num_iter
   all_v = np.zeros(num_cand * num_iter);
   for i in range(num_iter):
     k = np.repeat(keys, n);
-    c0a, c1a = sp.dec_one_round((ct0a, ct1a),k); c0b, c1b = sp.dec_one_round((ct0b, ct1b),k);
+    c0a, c1a = sp.decrypt_one_round((ct0a, ct1a),k); c0b, c1b = sp.decrypt_one_round((ct0b, ct1b),k);
     X = sp.convert_to_binary([c0a, c1a, c0b, c1b]);
     Z = net.predict(X,batch_size=10000);
     Z = Z.reshape(num_cand, -1);
@@ -221,8 +221,8 @@ def test_bayes(cts,it=1, cutoff1=10, cutoff2=10, net=net7, net_help=net6, m_main
       if (vtmp > cutoff1):
         l2 = [i for i in range(len(keys)) if v[i] > cutoff1];
         for i2 in l2:
-          c0a, c1a = sp.dec_one_round((cts[0][i],cts[1][i]),keys[i2]);
-          c0b, c1b = sp.dec_one_round((cts[2][i],cts[3][i]),keys[i2]);         
+          c0a, c1a = sp.decrypt_one_round((cts[0][i],cts[1][i]),keys[i2]);
+          c0b, c1b = sp.decrypt_one_round((cts[2][i],cts[3][i]),keys[i2]);
           keys2,scores2,v2 = bayesian_key_recovery([c0a, c1a, c0b, c1b],num_cand=32, num_iter=5, m=m6,s=s6,net=net_help);
           vtmp2 = np.max(v2);
           if (vtmp2 > best_val):

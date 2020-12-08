@@ -42,7 +42,7 @@ def encrypt_one_round(p, k):
     return (c0, c1)
 
 
-def dec_one_round(c, k):
+def decrypt_one_round(c, k):
     c0, c1 = c[0], c[1]
     c1 = c1 ^ c0
     c1 = ror(c1, BETA())
@@ -71,7 +71,7 @@ def encrypt(p, ks):
 def decrypt(c, ks):
     x, y = c[0], c[1]
     for k in reversed(ks):
-        x, y = dec_one_round((x, y), k)
+        x, y = decrypt_one_round((x, y), k)
     return (x, y)
 
 

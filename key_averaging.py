@@ -12,8 +12,8 @@ WORD_SIZE = sp.WORD_SIZE();
 
 def key_average(ct0a, ct1a, ct0b, ct1b, keys, net):
     n = len(keys);
-    pt0a, pt1a = sp.dec_one_round((ct0a, ct1a),keys);
-    pt0b, pt1b = sp.dec_one_round((ct0b, ct1b),keys);
+    pt0a, pt1a = sp.decrypt_one_round((ct0a, ct1a),keys);
+    pt0b, pt1b = sp.decrypt_one_round((ct0b, ct1b),keys);
     X = sp.convert_to_binary([pt0a, pt1a, pt0b, pt1b]);
     Z = net.predict(X,batch_size=10000);
     Z = Z/(1-Z); v = np.average(Z);
