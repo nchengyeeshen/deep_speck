@@ -95,7 +95,7 @@ def train_speck_distinguisher(num_epochs, num_rounds=7, depth=1):
     X_eval, Y_eval = sp.make_train_data(10 ** 6, num_rounds)
     # set up model checkpoint
     check = make_checkpoint(
-        working_dir + "best" + str(num_rounds) + "depth" + str(depth) + ".h5"
+        f"{working_dir}best{num_rounds}depth{depth}.h5"
     )
     # create learnrate schedule
     lr = LearningRateScheduler(cyclic_lr(10, 0.002, 0.0001))
@@ -109,16 +109,16 @@ def train_speck_distinguisher(num_epochs, num_rounds=7, depth=1):
         callbacks=[lr, check],
     )
     np.save(
-        working_dir + "h" + str(num_rounds) + "r_depth" + str(depth) + ".npy",
+        f"{working_dir}h{num_rounds}r_depth{depth}.npy",
         h.history["val_acc"],
     )
     np.save(
-        working_dir + "h" + str(num_rounds) + "r_depth" + str(depth) + ".npy",
+        f"{working_dir}h{num_rounds}r_depth{depth}.npy",
         h.history["val_loss"],
     )
     dump(
         h.history,
-        open(working_dir + "hist" + str(num_rounds) + "r_depth" + str(depth) + ".p", "wb"),
+        open(f"{working_dir}hist{num_rounds}r_depth{depth}.p", "wb"),
     )
-    print("Best validation accuracy: ", np.max(h.history["val_acc"]))
+    print(f"Best validation accuracy: {np.max(h.history['val_acc'])}")
     return (net, h)
