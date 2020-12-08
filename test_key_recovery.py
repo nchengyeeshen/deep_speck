@@ -1,14 +1,14 @@
 # Proof of concept implementation of 11-round key recovery attack
 
-import speck as sp
-import numpy as np
+from math import log, log2, sqrt
+from os import urandom
+from time import time
 
+import numpy as np
 from keras.models import model_from_json
 from scipy.stats import norm
-from os import urandom
-from math import sqrt, log, log2
-from time import time
-from math import log2
+
+import speck as sp
 
 WORD_SIZE = sp.WORD_SIZE
 
