@@ -1,7 +1,7 @@
-import speck as sp
 import numpy as np
-
 from keras.models import model_from_json
+
+import speck as sp
 
 # load distinguishers
 json_file = open("single_block_resnet.json", "r")
