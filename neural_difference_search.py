@@ -76,10 +76,12 @@ def greedy_optimizer_with_exploration(guess, f, n=2000, alpha=0.01, num_bits=32)
     return (best_guess, best_val)
 
 
-net_pp = train_preprocessor(10 ** 7, 3, 1)
-for i in range(10):
-    print("Run ", i, ": ")
-    diff, val_acc = greedy_optimizer_with_exploration(
-        randint(0, 2 ** 32 - 1), lambda x: evaluate_diff(x, net_pp, 3)
-    )
-    extend_attack(diff, net_pp, 3, val_acc)
+if __name__ == "__main__":
+    net_pp = train_preprocessor(10 ** 7, 3, 1)
+
+    for i in range(1, 11):
+        print(f"Run {i}:")
+        diff, val_acc = greedy_optimizer_with_exploration(
+            randint(0, 2 ** 32 - 1), lambda x: evaluate_diff(x, net_pp, 3)
+        )
+        extend_attack(diff, net_pp, 3, val_acc)
