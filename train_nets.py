@@ -4,8 +4,17 @@ from pickle import dump
 import numpy as np
 from keras import backend as K
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint
-from keras.layers import (Activation, Add, BatchNormalization, Conv1D, Dense,
-                          Flatten, Input, Permute, Reshape)
+from keras.layers import (
+    Activation,
+    Add,
+    BatchNormalization,
+    Conv1D,
+    Dense,
+    Flatten,
+    Input,
+    Permute,
+    Reshape,
+)
 from keras.models import Model
 from keras.optimizers import Adam
 from keras.regularizers import l2
@@ -86,7 +95,9 @@ def make_resnet(
     return model
 
 
-def train_speck_distinguisher(num_epochs, num_rounds=7, depth=1, working_dir="./freshly_trained_nets/"):
+def train_speck_distinguisher(
+    num_epochs, num_rounds=7, depth=1, working_dir="./freshly_trained_nets/"
+):
     # create the network
     net = make_resnet(depth=depth, reg_param=10 ** -5)
     net.compile(optimizer="adam", loss="mse", metrics=["acc"])
@@ -94,9 +105,7 @@ def train_speck_distinguisher(num_epochs, num_rounds=7, depth=1, working_dir="./
     X, Y = sp.make_train_data(10 ** 7, num_rounds)
     X_eval, Y_eval = sp.make_train_data(10 ** 6, num_rounds)
     # set up model checkpoint
-    check = make_checkpoint(
-        f"{working_dir}best{num_rounds}depth{depth}.h5"
-    )
+    check = make_checkpoint(f"{working_dir}best{num_rounds}depth{depth}.h5")
     # create learnrate schedule
     lr = LearningRateScheduler(cyclic_lr(10, 0.002, 0.0001))
     # train and evaluate
