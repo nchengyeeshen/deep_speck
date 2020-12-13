@@ -1,5 +1,6 @@
 from pathlib import Path
 from pickle import dump
+from typing import Tuple
 
 import numpy as np
 from keras import backend as K
@@ -22,14 +23,13 @@ from keras.regularizers import l2
 import speck as sp
 
 
-def cyclic_lr(num_epochs, high_lr, low_lr):
-    res = lambda i: low_lr + ((num_epochs - 1) - i % num_epochs) / (num_epochs - 1) * (
+def cyclic_lr(num_epochs: int, high_lr: float, low_lr: float):
+    return lambda i: low_lr + ((num_epochs - 1) - i % num_epochs) / (num_epochs - 1) * (
         high_lr - low_lr
     )
-    return res
 
 
-def make_checkpoint(filepath):
+def make_checkpoint(filepath: str) -> ModelCheckpoint:
     return ModelCheckpoint(filepath, monitor="val_loss", save_best_only=True)
 
 
@@ -93,12 +93,23 @@ def make_resnet(
 
 
 def train_speck_distinguisher(
-    num_epochs,
-    num_rounds=7,
-    depth=1,
-    batch_size=5000,
-    working_dir="./freshly_trained_nets/",
-):
+    num_epochs: int,
+    num_rounds: int = 7,
+    depth: int = 1,
+    batch_size: int = 5000,
+    working_dir: str = "./freshly_trained_nets/",
+) -> Tuple[Model, Model]:
+    """
+    Train a SPECK distinguisher.
+
+    Parameters:
+        num_epochs -- Number of epochs to train for.
+        num_rounds -- Number of SPECK rounds.
+        depth -- Residual network depth.
+        batch_size -- Training batch size.
+        working_dir -- Directory to save data.
+    """
+
     # create the network
     net = make_resnet(depth=depth, reg_param=10 ** -5)
     net.compile(optimizer="adam", loss="mse", metrics=["acc"])
