@@ -24,15 +24,28 @@ import speck as sp
 import train_nets as tn
 
 
-def train_preprocessor(n, nr, epochs):
+def train_preprocessor(data_size: int, num_rounds: int, num_epochs: int) -> Model:
+    """
+    Train a pre-proprocessor network.
+
+    Parameters:
+        data_size -- Training data size.
+        num_rounds -- Number of Speck rounds.
+        num_epochs -- Number of epochs to train network.
+    """
+
     net = tn.make_resnet(depth=1)
+
     net.compile(optimizer="adam", loss="mse", metrics=["acc"])
-    # create a random input difference
+
+    # Create a random input difference
     diff_in = (randint(0, 2 ** 16), randint(0, 2 ** 16))
-    X, Y = sp.make_train_data(n, nr, diff=diff_in)
-    net.fit(X, Y, epochs=epochs, batch_size=5000, validation_split=0.1)
-    net_pp = Model(inputs=net.layers[0].input, outputs=net.layers[-2].output)
-    return net_pp
+
+    X, Y = sp.make_train_data(data_size, num_rounds, diff=diff_in)
+
+    net.fit(X, Y, epochs=num_epochs, batch_size=5000, validation_split=0.1)
+
+    return Model(inputs=net.layers[0].input, outputs=net.layers[-2].output)
 
 
 def evaluate_diff(linear_model, diff, net_pp, nr=3, n=1000):
