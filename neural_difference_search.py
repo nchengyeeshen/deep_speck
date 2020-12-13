@@ -23,8 +23,6 @@ from sklearn.linear_model import Ridge
 import speck as sp
 import train_nets as tn
 
-linear_model = Ridge(alpha=0.01)
-
 
 def train_preprocessor(n, nr, epochs):
     net = tn.make_resnet(depth=1)
@@ -37,7 +35,7 @@ def train_preprocessor(n, nr, epochs):
     return net_pp
 
 
-def evaluate_diff(diff, net_pp, nr=3, n=1000):
+def evaluate_diff(linear_model, diff, net_pp, nr=3, n=1000):
     if diff == 0:
         return 0.0
     d = (diff >> 16, diff & 0xFFFF)
@@ -53,12 +51,12 @@ def evaluate_diff(diff, net_pp, nr=3, n=1000):
 
 
 # for a given difference, derive a guess how many rounds may be attackable
-def extend_attack(diff, net_pp, nr, val_acc):
+def extend_attack(linear_model, diff, net_pp, nr, val_acc):
     print("Estimates of attack accuracy:")
     while val_acc > 0.52:
         print(str(nr) + " rounds:" + str(val_acc))
         nr = nr + 1
-        val_acc = evaluate_diff(diff, net_pp, nr=nr, n=1000)
+        val_acc = evaluate_diff(linear_model, diff, net_pp, nr=nr, n=1000)
 
 
 def greedy_optimizer_with_exploration(guess, f, n=2000, alpha=0.01, num_bits=32):
@@ -82,11 +80,12 @@ def greedy_optimizer_with_exploration(guess, f, n=2000, alpha=0.01, num_bits=32)
 
 
 if __name__ == "__main__":
+    linear_model = Ridge(alpha=0.01)
     net_pp = train_preprocessor(10 ** 7, 3, 1)
 
     for i in range(1, 11):
         print(f"Run {i}:")
         diff, val_acc = greedy_optimizer_with_exploration(
-            randint(0, 2 ** 32 - 1), lambda x: evaluate_diff(x, net_pp, 3)
+            randint(0, 2 ** 32 - 1), lambda x: evaluate_diff(linear_model, x, net_pp, 3)
         )
-        extend_attack(diff, net_pp, 3, val_acc)
+        extend_attack(linear_model, diff, net_pp, 3, val_acc)
