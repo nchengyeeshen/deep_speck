@@ -21,8 +21,6 @@ from keras.regularizers import l2
 
 import speck as sp
 
-BATCH_SIZE = 5000
-
 
 def cyclic_lr(num_epochs, high_lr, low_lr):
     res = lambda i: low_lr + ((num_epochs - 1) - i % num_epochs) / (num_epochs - 1) * (
@@ -96,7 +94,11 @@ def make_resnet(
 
 
 def train_speck_distinguisher(
-    num_epochs, num_rounds=7, depth=1, working_dir="./freshly_trained_nets/"
+    num_epochs,
+    num_rounds=7,
+    depth=1,
+    batch_size=5000,
+    working_dir="./freshly_trained_nets/",
 ):
     # create the network
     net = make_resnet(depth=depth, reg_param=10 ** -5)
@@ -113,7 +115,7 @@ def train_speck_distinguisher(
         X,
         Y,
         epochs=num_epochs,
-        batch_size=BATCH_SIZE,
+        batch_size=batch_size,
         validation_data=(X_eval, Y_eval),
         callbacks=[lr, check],
     )
