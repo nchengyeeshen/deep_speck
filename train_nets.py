@@ -23,9 +23,9 @@ from keras.regularizers import l2
 import speck as sp
 
 
-def cyclic_lr(num_epochs: int, high_lr: float, low_lr: float):
-    return lambda i: low_lr + ((num_epochs - 1) - i % num_epochs) / (num_epochs - 1) * (
-        high_lr - low_lr
+def cyclic_learning_rate(num_epochs: int, high_learning_rate: float, low_learning_rate: float):
+    return lambda i: low_learning_rate + ((num_epochs - 1) - i % num_epochs) / (num_epochs - 1) * (
+        high_learning_rate - low_learning_rate
     )
 
 
@@ -122,7 +122,7 @@ def train_speck_distinguisher(
     checkpoints = make_checkpoint(f"{working_dir}best{num_rounds}depth{depth}.h5")
 
     # Create learning rate scheduler
-    learning_rate_sched = LearningRateScheduler(cyclic_lr(10, 0.002, 0.0001))
+    learning_rate_sched = LearningRateScheduler(cyclic_learning_rate(10, 0.002, 0.0001))
 
     # Train and evaluate
     h = net.fit(
