@@ -13,7 +13,6 @@ from keras.regularizers import l2
 import speck as sp
 
 BATCH_SIZE = 5000
-WORKING_DIR = "./freshly_trained_nets/"
 
 
 def cyclic_lr(num_epochs, high_lr, low_lr):
@@ -87,7 +86,7 @@ def make_resnet(
     return model
 
 
-def train_speck_distinguisher(num_epochs, num_rounds=7, depth=1):
+def train_speck_distinguisher(num_epochs, num_rounds=7, depth=1, working_dir="./freshly_trained_nets/"):
     # create the network
     net = make_resnet(depth=depth, reg_param=10 ** -5)
     net.compile(optimizer="adam", loss="mse", metrics=["acc"])
@@ -96,7 +95,7 @@ def train_speck_distinguisher(num_epochs, num_rounds=7, depth=1):
     X_eval, Y_eval = sp.make_train_data(10 ** 6, num_rounds)
     # set up model checkpoint
     check = make_checkpoint(
-        f"{WORKING_DIR}best{num_rounds}depth{depth}.h5"
+        f"{working_dir}best{num_rounds}depth{depth}.h5"
     )
     # create learnrate schedule
     lr = LearningRateScheduler(cyclic_lr(10, 0.002, 0.0001))
@@ -111,19 +110,19 @@ def train_speck_distinguisher(num_epochs, num_rounds=7, depth=1):
     )
 
     # Create working directory if it doesn't exist
-    Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
+    Path(working_dir).mkdir(parents=True, exist_ok=True)
 
     np.save(
-        f"{WORKING_DIR}h{num_rounds}r_depth{depth}.npy",
+        f"{working_dir}h{num_rounds}r_depth{depth}.npy",
         h.history["val_acc"],
     )
     np.save(
-        f"{WORKING_DIR}h{num_rounds}r_depth{depth}.npy",
+        f"{working_dir}h{num_rounds}r_depth{depth}.npy",
         h.history["val_loss"],
     )
     dump(
         h.history,
-        open(f"{WORKING_DIR}hist{num_rounds}r_depth{depth}.p", "wb"),
+        open(f"{working_dir}hist{num_rounds}r_depth{depth}.p", "wb"),
     )
     print(f"Best validation accuracy: {np.max(h.history['val_acc'])}")
     return (net, h)
