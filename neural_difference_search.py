@@ -1,5 +1,16 @@
-# test if rapid training runs using neural networks can be used to find good initial differences in Speck32/64
-# idea: try all differences up to a certain weight and keep track of the performance level reached
+"""
+Test if rapid training runs using neural networks can be used to find good
+initial differences in Speck32/64. The idea is to try all differences up to a
+certain weight and keep track of the performance level reached.
+
+First, we train a network to distinguish 3-round Speck with a randomly chosen
+input difference. Then, we use the penultimate layer output of that network to
+pre-process output data for other differences. The pre-processed output for
+1,000 examples each is fed as training data to a single-layer perceptron. The
+perceptron is then evaluated using 1,000 validation samples. The validation
+accuracy of the perceptron is taken as an indication of how much the
+differential distribution deviates from uniformity for that input difference.
+"""
 
 from collections import defaultdict
 from math import log2
@@ -13,12 +24,6 @@ import speck as sp
 import train_nets as tn
 
 linear_model = Ridge(alpha=0.01)
-
-# first, we train a network to distinguish 3-round Speck with a randomly chosen input difference
-# then, we use the penultimate layer output of that network to preprocess output data for other differences
-# The preprocessed output for 1000 examples each is fed as training data to a single-layer perceptron
-# That single-layer perceptron is then evaluated using 1000 validation samples
-# The validation accuracy of the perceptron is taken as an indication of how much the differential distribution deviates from uniformity for that input difference
 
 
 def train_preprocessor(n, nr, epochs):
