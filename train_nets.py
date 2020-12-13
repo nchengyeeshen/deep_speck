@@ -110,29 +110,34 @@ def train_speck_distinguisher(
         working_dir -- Directory to save data.
     """
 
-    # create the network
+    # Create the network
     net = make_resnet(depth=depth, reg_param=10 ** -5)
     net.compile(optimizer="adam", loss="mse", metrics=["acc"])
-    # generate training and validation data
-    X, Y = sp.make_train_data(10 ** 7, num_rounds)
-    X_eval, Y_eval = sp.make_train_data(10 ** 6, num_rounds)
-    # set up model checkpoint
-    check = make_checkpoint(f"{working_dir}best{num_rounds}depth{depth}.h5")
-    # create learnrate schedule
-    lr = LearningRateScheduler(cyclic_lr(10, 0.002, 0.0001))
-    # train and evaluate
+
+    # Generate training and validation data
+    train_x, train_y = sp.make_train_data(10 ** 7, num_rounds)
+    validation_x, validation_y = sp.make_train_data(10 ** 6, num_rounds)
+
+    # Make checkpoints
+    checkpoints = make_checkpoint(f"{working_dir}best{num_rounds}depth{depth}.h5")
+
+    # Create learning rate scheduler
+    learning_rate_sched = LearningRateScheduler(cyclic_lr(10, 0.002, 0.0001))
+
+    # Train and evaluate
     h = net.fit(
-        X,
-        Y,
+        train_x,
+        train_y,
         epochs=num_epochs,
         batch_size=batch_size,
-        validation_data=(X_eval, Y_eval),
-        callbacks=[lr, check],
+        validation_data=(validation_x, validation_y),
+        callbacks=[learning_rate_sched, checkpoints],
     )
 
     # Create working directory if it doesn't exist
     Path(working_dir).mkdir(parents=True, exist_ok=True)
 
+    # Save data to working directory
     np.save(
         f"{working_dir}h{num_rounds}r_depth{depth}.npy",
         h.history["val_acc"],
@@ -145,5 +150,7 @@ def train_speck_distinguisher(
         h.history,
         open(f"{working_dir}hist{num_rounds}r_depth{depth}.p", "wb"),
     )
+
     print(f"Best validation accuracy: {np.max(h.history['val_acc'])}")
-    return (net, h)
+
+    return net, h
