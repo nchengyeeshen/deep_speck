@@ -30,8 +30,7 @@ def cyclic_lr(num_epochs, high_lr, low_lr):
 
 
 def make_checkpoint(filepath):
-    res = ModelCheckpoint(filepath, monitor="val_loss", save_best_only=True)
-    return res
+    return ModelCheckpoint(filepath, monitor="val_loss", save_best_only=True)
 
 
 # make residual tower of convolutional blocks
