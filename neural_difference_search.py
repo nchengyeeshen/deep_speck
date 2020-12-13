@@ -50,13 +50,23 @@ def evaluate_diff(linear_model, diff, net_pp, nr=3, n=1000):
     return val_acc
 
 
-# for a given difference, derive a guess how many rounds may be attackable
-def extend_attack(linear_model, diff, net_pp, nr, val_acc):
+def extend_attack(
+    linear_model: Ridge,
+    difference: int,
+    net_pp: Model,
+    num_rounds: int,
+    validation_accuracy: float,
+):
+    """Guess how many rounds may be attackable for a given difference."""
+
     print("Estimates of attack accuracy:")
-    while val_acc > 0.52:
-        print(str(nr) + " rounds:" + str(val_acc))
-        nr = nr + 1
-        val_acc = evaluate_diff(linear_model, diff, net_pp, nr=nr, n=1000)
+
+    while validation_accuracy > 0.52:
+        print(f"{num_rounds} rounds: {validation_accuracy}")
+        num_rounds += 1
+        validation_accuracy = evaluate_diff(
+            linear_model, difference, net_pp, nr=num_rounds, n=1000
+        )
 
 
 def greedy_optimizer_with_exploration(guess, f, n=2000, alpha=0.01, num_bits=32):
