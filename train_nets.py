@@ -59,7 +59,7 @@ def make_resnet(
     conv0 = Activation("relu")(conv0)
     # add residual blocks
     shortcut = conv0
-    for i in range(depth):
+    for _ in range(depth):
         conv1 = Conv1D(
             num_filters,
             kernel_size=ks,
