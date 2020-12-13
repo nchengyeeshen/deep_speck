@@ -29,8 +29,8 @@ def cyclic_lr(num_epochs, high_lr, low_lr):
     return res
 
 
-def make_checkpoint(datei):
-    res = ModelCheckpoint(datei, monitor="val_loss", save_best_only=True)
+def make_checkpoint(filepath):
+    res = ModelCheckpoint(filepath, monitor="val_loss", save_best_only=True)
     return res
 
 
