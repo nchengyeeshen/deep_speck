@@ -1,3 +1,4 @@
+from pathlib import Path
 from pickle import dump
 
 import numpy as np
@@ -108,6 +109,10 @@ def train_speck_distinguisher(num_epochs, num_rounds=7, depth=1):
         validation_data=(X_eval, Y_eval),
         callbacks=[lr, check],
     )
+
+    # Create working directory if it doesn't exist
+    Path(WORKING_DIR).mkdir(parents=True, exist_ok=True)
+
     np.save(
         f"{WORKING_DIR}h{num_rounds}r_depth{depth}.npy",
         h.history["val_acc"],
