@@ -66,7 +66,7 @@ def greedy_optimizer_with_exploration(guess, f, n=2000, alpha=0.01, num_bits=32)
     best_val = f(guess)
     val = best_val
     d = defaultdict(int)
-    for i in range(n):
+    for _ in range(n):
         d[guess] = d[guess] + 1
         r = randint(0, num_bits - 1)
         guess_neu = guess ^ (1 << r)
