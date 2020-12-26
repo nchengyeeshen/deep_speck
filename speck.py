@@ -73,13 +73,16 @@ def check_testvector():
         return False
 
 
-# convert_to_binary takes as input an array of ciphertext pairs
-# where the first row of the array contains the lefthand side of the ciphertexts,
-# the second row contains the righthand side of the ciphertexts,
-# the third row contains the lefthand side of the second ciphertexts,
-# and so on
-# it returns an array of bit vectors containing the same data
 def convert_to_binary(arr):
+    """
+    Takes an array of ciphertext pairs. The array's rows contain lefthand and
+    righthand sides of the ciphertexts in alternating fashion. In other words,
+    the first row contains the lefthand side of a ciphertext. The second row
+    contains the righthand side of a ciphertext. The third row contains the
+    lefthand side of a ciphertext and so on.
+
+    An array of bit vectors containing the same data is returned.
+    """
     X = np.zeros((4 * WORD_SIZE, len(arr[0])), dtype=np.uint8)
     for i in range(4 * WORD_SIZE):
         index = i // WORD_SIZE
@@ -89,10 +92,13 @@ def convert_to_binary(arr):
     return X
 
 
-# takes a text file that contains encrypted block0, block1, true diff prob, real or random
-# data samples are line separated, the above items whitespace-separated
-# returns train data, ground truth, optimal ddt prediction
 def readcsv(datei):
+    """
+    Takes a text file that contains encrypted block0, block1, true diff prob,
+    real or random data. Samples are line separated, the above items
+    whitespace-separated returns train data, ground truth, optimal DDT
+    prediction.
+    """
     data = np.genfromtxt(
         datei, delimiter=" ", converters={x: lambda s: int(s, 16) for x in range(2)}
     )
@@ -116,8 +122,8 @@ def readcsv(datei):
     return (X, Y, Z)
 
 
-# baseline training data generator
 def make_train_data(n, nr, diff=(0x0040, 0)):
+    """Baseline training data generator."""
     # Generate labels
     Y = np.frombuffer(urandom(n), dtype=np.uint8)
     Y = Y & 1
@@ -148,8 +154,8 @@ def make_train_data(n, nr, diff=(0x0040, 0)):
     return X, Y
 
 
-# real differences data generator
 def real_differences_data(n, nr, diff=(0x0040, 0)):
+    """Real differences data generator."""
     # Generate labels
     Y = np.frombuffer(urandom(n), dtype=np.uint8)
     Y = Y & 1
