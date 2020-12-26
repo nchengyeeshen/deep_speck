@@ -118,21 +118,34 @@ def readcsv(datei):
 
 # baseline training data generator
 def make_train_data(n, nr, diff=(0x0040, 0)):
+    # Generate labels
     Y = np.frombuffer(urandom(n), dtype=np.uint8)
     Y = Y & 1
+
+    # Generate keys
     keys = np.frombuffer(urandom(8 * n), dtype=np.uint16).reshape(4, -1)
+
+    # Generate plaintexts
     plain0l = np.frombuffer(urandom(2 * n), dtype=np.uint16)
     plain0r = np.frombuffer(urandom(2 * n), dtype=np.uint16)
+
+    # Apply input difference
     plain1l = plain0l ^ diff[0]
     plain1r = plain0r ^ diff[1]
     num_rand_samples = np.sum(Y == 0)
+
     plain1l[Y == 0] = np.frombuffer(urandom(2 * num_rand_samples), dtype=np.uint16)
     plain1r[Y == 0] = np.frombuffer(urandom(2 * num_rand_samples), dtype=np.uint16)
+
+    # Expand keys & encrypt plaintexts
     ks = expand_key(keys, nr)
     ctdata0l, ctdata0r = encrypt((plain0l, plain0r), ks)
     ctdata1l, ctdata1r = encrypt((plain1l, plain1r), ks)
+
+    # Convert to input format for neural networks
     X = convert_to_binary([ctdata0l, ctdata0r, ctdata1l, ctdata1r])
-    return (X, Y)
+
+    return X, Y
 
 
 # real differences data generator
