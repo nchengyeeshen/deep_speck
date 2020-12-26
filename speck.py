@@ -137,30 +137,38 @@ def make_train_data(n, nr, diff=(0x0040, 0)):
 
 # real differences data generator
 def real_differences_data(n, nr, diff=(0x0040, 0)):
-    # generate labels
+    # Generate labels
     Y = np.frombuffer(urandom(n), dtype=np.uint8)
     Y = Y & 1
-    # generate keys
+
+    # Generate keys
     keys = np.frombuffer(urandom(8 * n), dtype=np.uint16).reshape(4, -1)
-    # generate plaintexts
+
+    # Generate plaintexts
     plain0l = np.frombuffer(urandom(2 * n), dtype=np.uint16)
     plain0r = np.frombuffer(urandom(2 * n), dtype=np.uint16)
-    # apply input difference
+
+    # Apply input difference
     plain1l = plain0l ^ diff[0]
     plain1r = plain0r ^ diff[1]
     num_rand_samples = np.sum(Y == 0)
-    # expand keys and encrypt
+
+    # Expand keys and encrypt
     ks = expand_key(keys, nr)
     ctdata0l, ctdata0r = encrypt((plain0l, plain0r), ks)
     ctdata1l, ctdata1r = encrypt((plain1l, plain1r), ks)
-    # generate blinding values
+
+    # Generate blinding values
     k0 = np.frombuffer(urandom(2 * num_rand_samples), dtype=np.uint16)
     k1 = np.frombuffer(urandom(2 * num_rand_samples), dtype=np.uint16)
-    # apply blinding to the samples labelled as random
+
+    # Apply blinding to the samples labelled as random
     ctdata0l[Y == 0] = ctdata0l[Y == 0] ^ k0
     ctdata0r[Y == 0] = ctdata0r[Y == 0] ^ k1
     ctdata1l[Y == 0] = ctdata1l[Y == 0] ^ k0
     ctdata1r[Y == 0] = ctdata1r[Y == 0] ^ k1
-    # convert to input data for neural networks
+
+    # Convert to input data for neural networks
     X = convert_to_binary([ctdata0l, ctdata0r, ctdata1l, ctdata1r])
-    return (X, Y)
+
+    return X, Y
