@@ -154,6 +154,84 @@ def make_train_data(n, nr, diff=(0x0040, 0)):
     return X, Y
 
 
+def generate_quartet(size, num_rounds, diff1=(0x0040, 0), diff2=(0x0080, 0)):
+    """
+    Generate a quartet plaintext structure.
+
+    Arguments:
+        size -- Total size of plaintext structure.
+        num_rounds -- Number of rounds to expand key.
+        diff1 -- Difference 1.
+        diff2 -- Difference 2.
+    """
+    # Generate labels
+    labels = np.frombuffer(urandom(n), dtype=np.uint8)
+    labels = labels & 1
+
+    # Generate keys
+    keys = np.frombuffer(urandom(8 * n), dtype=np.uint16).reshape(4, -1)
+
+    # Generate plaintexts
+    plain1_left = np.frombuffer(urandom(2 * n), dtype=np.uint16)
+    plain1_right = np.frombuffer(urandom(2 * n), dtype=np.uint16)
+
+    # Apply input difference
+    plain2_left = plain1_left ^ diff1[0]
+    plain2_right = plain1_right ^ diff1[1]
+
+    plain3_left = plain1_left ^ diff2[0]
+    plain3_right = plain1_right ^ diff2[1]
+
+    plain4_left = plain3_left ^ diff1[0]
+    plain4_right = plain3_right ^ diff1[1]
+
+    num_rand_samples = np.sum(labels == 0)
+
+    plain2_left[labels == 0] = np.frombuffer(
+        urandom(2 * num_rand_samples), dtype=np.uint16
+    )
+    plain2_right[labels == 0] = np.frombuffer(
+        urandom(2 * num_rand_samples), dtype=np.uint16
+    )
+
+    plain3_left[labels == 0] = np.frombuffer(
+        urandom(2 * num_rand_samples), dtype=np.uint16
+    )
+    plain3_right[labels == 0] = np.frombuffer(
+        urandom(2 * num_rand_samples), dtype=np.uint16
+    )
+
+    plain4_left[labels == 0] = np.frombuffer(
+        urandom(2 * num_rand_samples), dtype=np.uint16
+    )
+    plain4_right[labels == 0] = np.frombuffer(
+        urandom(2 * num_rand_samples), dtype=np.uint16
+    )
+
+    # Expand keys & encrypt plaintexts
+    ks = expand_key(keys, nr)
+    cipher1_left, cipher1_right = encrypt((plain1_left, plain1_right), ks)
+    cipher2_left, cipher2_right = encrypt((plain2_left, plain2_right), ks)
+    cipher3_left, cipher3_right = encrypt((plain3_left, plain3_right), ks)
+    cipher4_left, cipher4_right = encrypt((plain4_left, plain4_right), ks)
+
+    # Convert to input format for neural networks
+    data = convert_to_binary(
+        [
+            cipher1_left,
+            cipher1_right,
+            cipher2_left,
+            cipher2_right,
+            cipher3_left,
+            cipher3_right,
+            cipher4_left,
+            cipher4_right,
+        ]
+    )
+
+    return data, labels
+
+
 def real_differences_data(n, nr, diff=(0x0040, 0)):
     """Real differences data generator."""
     # Generate labels
