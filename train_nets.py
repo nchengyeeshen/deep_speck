@@ -23,13 +23,17 @@ from keras.regularizers import l2
 import speck as sp
 
 
-def cyclic_learning_rate(num_epochs: int, high_learning_rate: float, low_learning_rate: float):
-    return lambda i: low_learning_rate + ((num_epochs - 1) - i % num_epochs) / (num_epochs - 1) * (
-        high_learning_rate - low_learning_rate
-    )
+def cyclic_learning_rate(
+    num_epochs: int, high_learning_rate: float, low_learning_rate: float
+):
+    """Callback function to tweak the learning rate."""
+    return lambda i: low_learning_rate + ((num_epochs - 1) - i % num_epochs) / (
+        num_epochs - 1
+    ) * (high_learning_rate - low_learning_rate)
 
 
 def make_checkpoint(filepath: str) -> ModelCheckpoint:
+    """Callback function to make a checkpoint file."""
     return ModelCheckpoint(filepath, monitor="val_loss", save_best_only=True)
 
 
