@@ -154,13 +154,13 @@ def make_train_data(n, nr, diff=(0x0040, 0)):
     return X, Y
 
 
-def gen_quartet_train_data(size, num_rounds, diff1=(0x0040, 0), diff2=(0x0080, 0)):
+def gen_quartet_train_data(n, n_r, diff1=(0x0040, 0), diff2=(0x0080, 0)):
     """
     Generate a quartet plaintext structure.
 
     Arguments:
-        size -- Total size of plaintext structure.
-        num_rounds -- Number of rounds to expand key.
+        n -- Total size of plaintext structure.
+        n_r -- Number of rounds to expand key.
         diff1 -- Difference 1.
         diff2 -- Difference 2.
     """
