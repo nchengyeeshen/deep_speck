@@ -154,7 +154,7 @@ def make_train_data(n, nr, diff=(0x0040, 0)):
     return X, Y
 
 
-def generate_quartet(size, num_rounds, diff1=(0x0040, 0), diff2=(0x0080, 0)):
+def gen_quartet_train_data(size, num_rounds, diff1=(0x0040, 0), diff2=(0x0080, 0)):
     """
     Generate a quartet plaintext structure.
 
@@ -172,18 +172,16 @@ def generate_quartet(size, num_rounds, diff1=(0x0040, 0), diff2=(0x0080, 0)):
     keys = np.frombuffer(urandom(8 * n), dtype=np.uint16).reshape(4, -1)
 
     # Generate plaintexts
-    plain1_left = np.frombuffer(urandom(2 * n), dtype=np.uint16)
-    plain1_right = np.frombuffer(urandom(2 * n), dtype=np.uint16)
-
-    # Apply input difference
-    plain2_left = plain1_left ^ diff1[0]
-    plain2_right = plain1_right ^ diff1[1]
-
-    plain3_left = plain1_left ^ diff2[0]
-    plain3_right = plain1_right ^ diff2[1]
-
-    plain4_left = plain3_left ^ diff1[0]
-    plain4_right = plain3_right ^ diff1[1]
+    (
+        plain1_left,
+        plain1_right,
+        plain2_left,
+        plain2_right,
+        plain3_left,
+        plain3_right,
+        plain4_left,
+        plain4_right,
+    ) = gen_quartet_plain(size, diff1, diff2)
 
     num_rand_samples = np.sum(labels == 0)
 
@@ -230,6 +228,40 @@ def generate_quartet(size, num_rounds, diff1=(0x0040, 0), diff2=(0x0080, 0)):
     )
 
     return data, labels
+
+
+def gen_quartet_plain(size, diff1, diff2):
+    """
+    Generate a quartet plaintext structure.
+
+    Arguments:
+        size -- Total size of plaintext structure.
+        diff1 -- Difference 1.
+        diff2 -- Difference 2.
+    """
+    plain1_left = np.frombuffer(urandom(2 * size), dtype=np.uint16)
+    plain1_right = np.frombuffer(urandom(2 * size), dtype=np.uint16)
+
+    # Apply input difference
+    plain2_left = plain1_left ^ diff1[0]
+    plain2_right = plain1_right ^ diff1[1]
+
+    plain3_left = plain1_left ^ diff2[0]
+    plain3_right = plain1_right ^ diff2[1]
+
+    plain4_left = plain3_left ^ diff1[0]
+    plain4_right = plain3_right ^ diff1[1]
+
+    return (
+        plain1_left,
+        plain1_right,
+        plain2_left,
+        plain2_right,
+        plain3_left,
+        plain3_right,
+        plain4_left,
+        plain4_right,
+    )
 
 
 def real_differences_data(n, nr, diff=(0x0040, 0)):
