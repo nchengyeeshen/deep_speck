@@ -267,9 +267,11 @@ def gen_quartet_plain(size, diff1, diff2):
 def gen_random_data(n):
     labels = np.zeros(n, dtype=np.uint8)
 
-    left = np.frombuffer(urandom(2 * n), dtype=np.uint16)
-    right = np.frombuffer(urandom(2 * n), dtype=np.uint16)
-    data = convert_to_binary([left, right])
+    rand0_left = np.frombuffer(urandom(2 * n), dtype=np.uint16)
+    rand0_right = np.frombuffer(urandom(2 * n), dtype=np.uint16)
+    rand1_left = np.frombuffer(urandom(2 * n), dtype=np.uint16)
+    rand1_right = np.frombuffer(urandom(2 * n), dtype=np.uint16)
+    data = convert_to_binary([rand0_left, rand0_right, rand1_left, rand1_right])
 
     return data, labels
 
