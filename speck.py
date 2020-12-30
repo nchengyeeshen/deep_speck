@@ -264,6 +264,16 @@ def gen_quartet_plain(size, diff1, diff2):
     )
 
 
+def gen_random_data(n):
+    labels = np.zeros(n, dtype=np.uint8)
+
+    left = np.frombuffer(urandom(2 * n), dtype=np.uint16)
+    right = np.frombuffer(urandom(2 * n), dtype=np.uint16)
+    data = convert_to_binary([left, right])
+
+    return data, labels
+
+
 def real_differences_data(n, nr, diff=(0x0040, 0)):
     """Real differences data generator."""
     # Generate labels

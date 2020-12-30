@@ -1,3 +1,5 @@
+from os import urandom
+
 import numpy as np
 from keras.models import model_from_json
 
@@ -39,10 +41,14 @@ if __name__ == "__main__":
     net8.load_weights("net8_small.h5")
 
     N = 10 ** 6
-    X5, Y5 = sp.make_train_data(N, 5)
-    X6, Y6 = sp.make_train_data(N, 6)
-    X7, Y7 = sp.make_train_data(N, 7)
-    X8, Y8 = sp.make_train_data(N, 8)
+    # X5, Y5 = sp.make_train_data(N, 5)
+    # X6, Y6 = sp.make_train_data(N, 6)
+    # X7, Y7 = sp.make_train_data(N, 7)
+    # X8, Y8 = sp.make_train_data(N, 8)
+    X5, Y5 = sp.gen_random_data(N)
+    X6, Y6 = sp.gen_random_data(N)
+    X7, Y7 = sp.gen_random_data(N)
+    X8, Y8 = sp.gen_random_data(N)
 
     X5r, Y5r = sp.real_differences_data(N, 5)
     X6r, Y6r = sp.real_differences_data(N, 6)
