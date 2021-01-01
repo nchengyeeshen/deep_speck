@@ -181,7 +181,7 @@ def gen_quartet_train_data(n, n_r, diff1=(0x0040, 0), diff2=(0x0080, 0)):
         plain3_right,
         plain4_left,
         plain4_right,
-    ) = gen_quartet_plain(size, diff1, diff2)
+    ) = gen_quartet_plain(n, diff1, diff2)
 
     num_rand_samples = np.sum(labels == 0)
 
@@ -207,7 +207,7 @@ def gen_quartet_train_data(n, n_r, diff1=(0x0040, 0), diff2=(0x0080, 0)):
     )
 
     # Expand keys & encrypt plaintexts
-    ks = expand_key(keys, nr)
+    ks = expand_key(keys, n_r)
     cipher1_left, cipher1_right = encrypt((plain1_left, plain1_right), ks)
     cipher2_left, cipher2_right = encrypt((plain2_left, plain2_right), ks)
     cipher3_left, cipher3_right = encrypt((plain3_left, plain3_right), ks)
